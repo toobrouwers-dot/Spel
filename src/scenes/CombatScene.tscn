@@ -1,0 +1,67 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://src/scenes/combat_scene_controller.gd" id="1_controller"]
+[ext_resource type="Script" path="res://src/core/turn/turn_system.gd" id="2_turn"]
+[ext_resource type="Script" path="res://src/core/hand/hand_manager.gd" id="3_hand"]
+[ext_resource type="Script" path="res://src/core/deck/deck_mutation_system.gd" id="4_deck"]
+[ext_resource type="Script" path="res://src/core/entities/player_entity.gd" id="5_player"]
+[ext_resource type="Script" path="res://src/ui/hand_ui.gd" id="6_handui"]
+[ext_resource type="Script" path="res://src/ui/hud.gd" id="7_hud"]
+
+[node name="CombatScene" type="Node2D"]
+script = ExtResource("1_controller")
+
+[node name="GridLayer" type="Node2D" parent="."]
+
+[node name="EmotionLayer" type="Node2D" parent="."]
+
+[node name="EntityLayer" type="Node2D" parent="."]
+
+[node name="PlayerEntity" type="Node2D" parent="EntityLayer"]
+script = ExtResource("5_player")
+max_hp = 30
+
+[node name="HUD" type="CanvasLayer" parent="."]
+layer = 10
+script = ExtResource("7_hud")
+
+[node name="HPBar" type="ProgressBar" parent="HUD"]
+anchors_preset = 0
+offset_left = 40.0
+offset_top = 20.0
+offset_right = 640.0
+offset_bottom = 56.0
+min_value = 0.0
+max_value = 30.0
+value = 30.0
+
+[node name="TurnLabel" type="Label" parent="HUD"]
+anchors_preset = 0
+offset_left = 700.0
+offset_top = 20.0
+offset_right = 1040.0
+offset_bottom = 56.0
+text = "Beurt 1"
+
+[node name="HandUI" type="CanvasLayer" parent="."]
+layer = 10
+script = ExtResource("6_handui")
+
+[node name="CardFan" type="HBoxContainer" parent="HandUI"]
+anchors_preset = 0
+offset_left = 20.0
+offset_top = 1750.0
+offset_right = 1060.0
+offset_bottom = 2280.0
+theme_override_constants/separation = 8
+
+[node name="Systems" type="Node" parent="."]
+
+[node name="TurnSystem" type="Node" parent="Systems"]
+script = ExtResource("2_turn")
+
+[node name="HandManager" type="Node" parent="Systems"]
+script = ExtResource("3_hand")
+
+[node name="DeckMutationSystem" type="Node" parent="Systems"]
+script = ExtResource("4_deck")
