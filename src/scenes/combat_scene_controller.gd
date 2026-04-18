@@ -15,10 +15,12 @@ const GRID_OFFSET := Vector2(
 @onready var turn_system: TurnSystem = $Systems/TurnSystem
 @onready var hand_manager: HandManager = $Systems/HandManager
 @onready var deck_mutation: DeckMutationSystem = $Systems/DeckMutationSystem
+@onready var enemy_spawner: EnemySpawner = $Systems/EnemySpawner
 
 var combat_grid: CombatGrid
 var cell_visuals: Dictionary = {}        # GridCell -> GridCellVisual
 var emotion_visuals: Dictionary = {}     # EmotionObject -> EmotionObjectVisual
+var enemy_visuals: Dictionary = {}       # EnemyEntity -> EnemyVisual
 var _selected_card: EmotionCard = null
 
 func _ready() -> void:
@@ -44,13 +46,17 @@ func _connect_signals() -> void:
 	hand_manager.hand_changed.connect(_on_hand_changed)
 	turn_system.fight_ended.connect(_on_fight_ended)
 	hand_ui.card_selected.connect(on_card_selected)
+	enemy_spawner.enemy_spawned.connect(_on_enemy_spawned)
+	turn_system.enemy_moved.connect(_on_enemy_moved)
 	turn_system.turn_ended.connect(func(t): hud.update_turn(t))
 	_get_player().hp_changed.connect(func(_o, c): hud.update_hp(c, _get_player().max_hp))
 
 func _start_fight() -> void:
 	var starter_deck := _build_starter_deck()
 	hand_manager.setup(starter_deck)
+	var spawned_enemies := enemy_spawner.spawn_wave(combat_grid, 3)
 	turn_system.setup(combat_grid, _get_player(), hand_manager, deck_mutation)
+	turn_system.enemies = spawned_enemies
 	for i in 4:
 		hand_manager.draw_card()
 
@@ -100,6 +106,21 @@ func _on_resonance_triggered(group: Array[EmotionObject]) -> void:
 
 func _on_hand_changed(_hand: Array[EmotionCard]) -> void:
 	hand_ui.refresh_hand(hand_manager.hand)
+
+func _on_enemy_moved(enemy: EnemyEntity, new_cell: GridCell) -> void:
+	if enemy_visuals.has(enemy):
+		enemy_visuals[enemy].move_to_cell(new_cell)
+
+func _on_enemy_spawned(enemy: EnemyEntity) -> void:
+	var vis := EnemyVisual.new()
+	vis.setup(enemy)
+	entity_layer.add_child(vis)
+	enemy_visuals[enemy] = vis
+	enemy.died.connect(func() -> void: _on_enemy_died(enemy))
+
+func _on_enemy_died(enemy: EnemyEntity) -> void:
+	enemy_visuals.erase(enemy)
+	turn_system.enemies.erase(enemy)
 
 func _on_fight_ended(player_won: bool) -> void:
 	if player_won:
