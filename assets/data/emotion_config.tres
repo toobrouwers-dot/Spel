@@ -1,0 +1,270 @@
+[gd_resource type="EmotionConfig" script_class="EmotionConfig" load_steps=32 format=3]
+
+[ext_resource type="Script" path="res://src/data/emotion_config.gd" id="1_config"]
+[ext_resource type="Script" path="res://src/data/emotion_config_entry.gd" id="2_entry"]
+
+; ── RAGE ────────────────────────────────────────────────────────────────────
+[sub_resource type="Resource" id="rage_0"]
+script = ExtResource("2_entry")
+emotion_type = 0
+mutation_level = 0
+aura_radius = 1
+aura_damage = 3.0
+collapse_power = 8.0
+
+[sub_resource type="Resource" id="rage_1"]
+script = ExtResource("2_entry")
+emotion_type = 0
+mutation_level = 1
+aura_radius = 2
+aura_damage = 4.5
+collapse_power = 14.0
+
+[sub_resource type="Resource" id="rage_2"]
+script = ExtResource("2_entry")
+emotion_type = 0
+mutation_level = 2
+aura_radius = 3
+aura_damage = 6.0
+collapse_power = 22.0
+
+; ── GRIEF ───────────────────────────────────────────────────────────────────
+[sub_resource type="Resource" id="grief_0"]
+script = ExtResource("2_entry")
+emotion_type = 1
+mutation_level = 0
+aura_radius = 1
+aura_damage = 0.0
+collapse_power = 4.0
+
+[sub_resource type="Resource" id="grief_1"]
+script = ExtResource("2_entry")
+emotion_type = 1
+mutation_level = 1
+aura_radius = 2
+aura_damage = 0.0
+collapse_power = 7.0
+
+[sub_resource type="Resource" id="grief_2"]
+script = ExtResource("2_entry")
+emotion_type = 1
+mutation_level = 2
+aura_radius = 2
+aura_damage = 1.0
+collapse_power = 12.0
+
+; ── PANIC ───────────────────────────────────────────────────────────────────
+[sub_resource type="Resource" id="panic_0"]
+script = ExtResource("2_entry")
+emotion_type = 2
+mutation_level = 0
+aura_radius = 0
+aura_damage = 0.0
+collapse_power = 0.0
+
+[sub_resource type="Resource" id="panic_1"]
+script = ExtResource("2_entry")
+emotion_type = 2
+mutation_level = 1
+aura_radius = 0
+aura_damage = 0.0
+collapse_power = 0.0
+
+[sub_resource type="Resource" id="panic_2"]
+script = ExtResource("2_entry")
+emotion_type = 2
+mutation_level = 2
+aura_radius = 0
+aura_damage = 0.0
+collapse_power = 0.0
+
+; ── AWE ─────────────────────────────────────────────────────────────────────
+[sub_resource type="Resource" id="awe_0"]
+script = ExtResource("2_entry")
+emotion_type = 3
+mutation_level = 0
+aura_radius = 2
+aura_damage = 0.0
+collapse_power = 6.0
+
+[sub_resource type="Resource" id="awe_1"]
+script = ExtResource("2_entry")
+emotion_type = 3
+mutation_level = 1
+aura_radius = 2
+aura_damage = 0.0
+collapse_power = 10.0
+
+[sub_resource type="Resource" id="awe_2"]
+script = ExtResource("2_entry")
+emotion_type = 3
+mutation_level = 2
+aura_radius = 3
+aura_damage = 0.0
+collapse_power = 16.0
+
+; ── VOID ────────────────────────────────────────────────────────────────────
+[sub_resource type="Resource" id="void_0"]
+script = ExtResource("2_entry")
+emotion_type = 4
+mutation_level = 0
+aura_radius = 2
+aura_damage = 0.0
+collapse_power = 12.0
+
+[sub_resource type="Resource" id="void_1"]
+script = ExtResource("2_entry")
+emotion_type = 4
+mutation_level = 1
+aura_radius = 3
+aura_damage = 0.0
+collapse_power = 20.0
+
+[sub_resource type="Resource" id="void_2"]
+script = ExtResource("2_entry")
+emotion_type = 4
+mutation_level = 2
+aura_radius = 3
+aura_damage = 0.0
+collapse_power = 30.0
+
+; ── HOPE ────────────────────────────────────────────────────────────────────
+[sub_resource type="Resource" id="hope_0"]
+script = ExtResource("2_entry")
+emotion_type = 5
+mutation_level = 0
+aura_radius = 1
+aura_damage = 0.0
+collapse_power = 3.0
+
+[sub_resource type="Resource" id="hope_1"]
+script = ExtResource("2_entry")
+emotion_type = 5
+mutation_level = 1
+aura_radius = 2
+aura_damage = 0.0
+collapse_power = 5.0
+
+[sub_resource type="Resource" id="hope_2"]
+script = ExtResource("2_entry")
+emotion_type = 5
+mutation_level = 2
+aura_radius = 2
+aura_damage = 0.0
+collapse_power = 8.0
+
+; ── CONFUSION ───────────────────────────────────────────────────────────────
+[sub_resource type="Resource" id="confusion_0"]
+script = ExtResource("2_entry")
+emotion_type = 6
+mutation_level = 0
+aura_radius = 1
+aura_damage = 0.0
+collapse_power = 5.0
+
+[sub_resource type="Resource" id="confusion_1"]
+script = ExtResource("2_entry")
+emotion_type = 6
+mutation_level = 1
+aura_radius = 1
+aura_damage = 2.0
+collapse_power = 9.0
+
+[sub_resource type="Resource" id="confusion_2"]
+script = ExtResource("2_entry")
+emotion_type = 6
+mutation_level = 2
+aura_radius = 2
+aura_damage = 3.0
+collapse_power = 15.0
+
+; ── PRIDE ───────────────────────────────────────────────────────────────────
+[sub_resource type="Resource" id="pride_0"]
+script = ExtResource("2_entry")
+emotion_type = 7
+mutation_level = 0
+aura_radius = 3
+aura_damage = 5.0
+collapse_power = 18.0
+
+[sub_resource type="Resource" id="pride_1"]
+script = ExtResource("2_entry")
+emotion_type = 7
+mutation_level = 1
+aura_radius = 3
+aura_damage = 7.0
+collapse_power = 26.0
+
+[sub_resource type="Resource" id="pride_2"]
+script = ExtResource("2_entry")
+emotion_type = 7
+mutation_level = 2
+aura_radius = 3
+aura_damage = 10.0
+collapse_power = 38.0
+
+; ── ENVY ────────────────────────────────────────────────────────────────────
+[sub_resource type="Resource" id="envy_0"]
+script = ExtResource("2_entry")
+emotion_type = 8
+mutation_level = 0
+aura_radius = 1
+aura_damage = 0.0
+collapse_power = 6.0
+
+[sub_resource type="Resource" id="envy_1"]
+script = ExtResource("2_entry")
+emotion_type = 8
+mutation_level = 1
+aura_radius = 2
+aura_damage = 2.0
+collapse_power = 10.0
+
+[sub_resource type="Resource" id="envy_2"]
+script = ExtResource("2_entry")
+emotion_type = 8
+mutation_level = 2
+aura_radius = 2
+aura_damage = 4.0
+collapse_power = 16.0
+
+; ── NOSTALGIA ───────────────────────────────────────────────────────────────
+[sub_resource type="Resource" id="nostalgia_0"]
+script = ExtResource("2_entry")
+emotion_type = 9
+mutation_level = 0
+aura_radius = 1
+aura_damage = 0.0
+collapse_power = 7.0
+
+[sub_resource type="Resource" id="nostalgia_1"]
+script = ExtResource("2_entry")
+emotion_type = 9
+mutation_level = 1
+aura_radius = 1
+aura_damage = 0.0
+collapse_power = 12.0
+
+[sub_resource type="Resource" id="nostalgia_2"]
+script = ExtResource("2_entry")
+emotion_type = 9
+mutation_level = 2
+aura_radius = 2
+aura_damage = 0.0
+collapse_power = 18.0
+
+; ── ROOT ────────────────────────────────────────────────────────────────────
+[resource]
+script = ExtResource("1_config")
+entries = [
+	SubResource("rage_0"), SubResource("rage_1"), SubResource("rage_2"),
+	SubResource("grief_0"), SubResource("grief_1"), SubResource("grief_2"),
+	SubResource("panic_0"), SubResource("panic_1"), SubResource("panic_2"),
+	SubResource("awe_0"), SubResource("awe_1"), SubResource("awe_2"),
+	SubResource("void_0"), SubResource("void_1"), SubResource("void_2"),
+	SubResource("hope_0"), SubResource("hope_1"), SubResource("hope_2"),
+	SubResource("confusion_0"), SubResource("confusion_1"), SubResource("confusion_2"),
+	SubResource("pride_0"), SubResource("pride_1"), SubResource("pride_2"),
+	SubResource("envy_0"), SubResource("envy_1"), SubResource("envy_2"),
+	SubResource("nostalgia_0"), SubResource("nostalgia_1"), SubResource("nostalgia_2"),
+]
