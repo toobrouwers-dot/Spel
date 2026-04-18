@@ -26,6 +26,7 @@ var cell_visuals: Dictionary = {}        # GridCell -> GridCellVisual
 var emotion_visuals: Dictionary = {}     # EmotionObject -> EmotionObjectVisual
 var enemy_visuals: Dictionary = {}       # EnemyEntity -> EnemyVisual
 var player_visual: PlayerVisual
+var game_over_screen: GameOverScreen
 var _selected_card: EmotionCard = null
 var _queued_move_cell: GridCell = null
 var _touch_start: Vector2 = Vector2.ZERO
@@ -35,6 +36,7 @@ func _ready() -> void:
 	add_child(combat_grid)
 	combat_grid.position = GRID_OFFSET
 	_build_cell_visuals()
+	_build_game_over_screen()
 	_connect_signals()
 	_start_fight()
 
@@ -71,6 +73,13 @@ func _start_fight() -> void:
 	hud.update_hp(_get_player().current_hp, _get_player().max_hp)
 	for i in 4:
 		hand_manager.draw_card()
+
+func _build_game_over_screen() -> void:
+	game_over_screen = GameOverScreen.new()
+	game_over_screen.restart_requested.connect(
+		func() -> void: get_tree().reload_current_scene()
+	)
+	add_child(game_over_screen)
 
 func _place_player_on_grid() -> void:
 	var p := _get_player()
@@ -180,6 +189,9 @@ func _on_enemy_died(enemy: EnemyEntity) -> void:
 func _on_fight_ended(player_won: bool) -> void:
 	if player_won:
 		deck_mutation.on_fight_ended(hand_manager.draw_pile + hand_manager.hand + hand_manager.discard_pile)
+		game_over_screen.show_win()
+	else:
+		game_over_screen.show_lose()
 
 func _get_player() -> PlayerEntity:
 	return entity_layer.get_node("PlayerEntity") as PlayerEntity
