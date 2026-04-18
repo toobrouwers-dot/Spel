@@ -1,19 +1,31 @@
 class_name EmotionLibrary
-extends RefCounted
+extends Node
 
-## All balance values loaded from external resource — never hardcoded here.
-static var _config: Resource
+const CONFIG_PATH := "res://assets/data/emotion_config.tres"
 
-static func get_aura_radius(type: EmotionObject.Type, level: int) -> int:
+## Fallback defaults wanneer config niet geladen is of entry ontbreekt.
+const _DEFAULTS := {
+	"aura_radius":    { 0: 1, 1: 2, 2: 3 },
+	"collapse_power": { 0: 5.0, 1: 10.0, 2: 18.0 },
+	"aura_damage":    { 0: 0.0, 1: 0.0, 2: 0.0 },
+}
+
+var _config: EmotionConfig
+
+func _ready() -> void:
+	if ResourceLoader.exists(CONFIG_PATH):
+		_config = load(CONFIG_PATH) as EmotionConfig
+
+func get_aura_radius(type: EmotionObject.Type, level: int) -> int:
 	return _get_int("aura_radius", type, level, 1)
 
-static func get_collapse_power(type: EmotionObject.Type, level: int) -> float:
+func get_collapse_power(type: EmotionObject.Type, level: int) -> float:
 	return _get_float("collapse_power", type, level, 5.0)
 
-static func get_aura_damage(type: EmotionObject.Type, level: int) -> float:
+func get_aura_damage(type: EmotionObject.Type, level: int) -> float:
 	return _get_float("aura_damage", type, level, 0.0)
 
-static func build_aura_effect(
+func build_aura_effect(
 		type: EmotionObject.Type,
 		level: int,
 		source: EmotionObject) -> AuraEffect:
@@ -27,12 +39,16 @@ static func build_aura_effect(
 		_:
 			return AuraEffect.none()
 
-static func _get_int(key: String, type: EmotionObject.Type, level: int, default: int) -> int:
-	if _config and _config.has_method("get_value"):
-		return _config.get_value(key, type, level)
-	return default
+func _get_int(key: String, type: EmotionObject.Type, level: int, default: int) -> int:
+	if _config:
+		var val: Variant = _config.get_value(key, type, level)
+		if val != null:
+			return int(val)
+	return _DEFAULTS.get(key, {}).get(level, default)
 
-static func _get_float(key: String, type: EmotionObject.Type, level: int, default: float) -> float:
-	if _config and _config.has_method("get_value"):
-		return float(_config.get_value(key, type, level))
-	return default
+func _get_float(key: String, type: EmotionObject.Type, level: int, default: float) -> float:
+	if _config:
+		var val: Variant = _config.get_value(key, type, level)
+		if val != null:
+			return float(val)
+	return float(_DEFAULTS.get(key, {}).get(level, default))
