@@ -20,6 +20,7 @@ boot_splash/show_image=false
 
 EmotionLibrary="*res://src/core/emotions/emotion_library.gd"
 RunProgression="*res://src/core/run/run_progression_system.gd"
+AudioManager="*res://src/core/audio/audio_manager.gd"
 
 [display]
 

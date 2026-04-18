@@ -58,9 +58,17 @@ func _connect_signals() -> void:
 	enemy_spawner.enemy_spawned.connect(_on_enemy_spawned)
 	turn_system.enemy_moved.connect(_on_enemy_moved)
 	turn_system.turn_ended.connect(func(t): hud.update_turn(t))
+	turn_system.turn_ended.connect(func(_t): AudioManager.play_turn_tick())
 	turn_system.panic_changed.connect(func(active): player_visual.show_panic(active))
+	turn_system.panic_changed.connect(func(active): if active: AudioManager.play_panic_on())
+	turn_system.fight_ended.connect(_on_fight_ended_audio)
+	combat_grid.emotion_placed.connect(func(_o, _c): AudioManager.play_card_played())
+	combat_grid.emotion_collapsed.connect(func(_o, _p): AudioManager.play_emotion_collapse())
+	combat_grid.resonance_triggered.connect(func(_g): AudioManager.play_resonance())
+	hand_manager.card_drawn.connect(func(_c): AudioManager.play_card_drawn())
 	var p := _get_player()
 	p.hp_changed.connect(func(_o, c): hud.update_hp(c, p.max_hp))
+	p.hp_changed.connect(func(old, new_hp): if new_hp < old: AudioManager.play_player_hit())
 	p.moved.connect(func(_from, to): player_visual.move_to_cell(to))
 
 func _start_fight() -> void:
@@ -187,10 +195,17 @@ func _on_enemy_spawned(enemy: EnemyEntity) -> void:
 	entity_layer.add_child(vis)
 	enemy_visuals[enemy] = vis
 	enemy.died.connect(func() -> void: _on_enemy_died(enemy))
+	enemy.hp_changed.connect(func(old, new_hp): if new_hp < old: AudioManager.play_enemy_hit())
 
 func _on_enemy_died(enemy: EnemyEntity) -> void:
 	enemy_visuals.erase(enemy)
 	turn_system.enemies.erase(enemy)
+
+func _on_fight_ended_audio(player_won: bool) -> void:
+	if player_won:
+		AudioManager.play_fight_won()
+	else:
+		AudioManager.play_fight_lost()
 
 func _on_fight_ended(player_won: bool) -> void:
 	var run: RunProgressionSystem = get_node("/root/RunProgression")
