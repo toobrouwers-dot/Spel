@@ -13,6 +13,7 @@ var panic_active: bool = false
 signal turn_started(turn: int)
 signal turn_ended(turn: int)
 signal fight_ended(player_won: bool)
+signal enemy_moved(enemy: EnemyEntity, new_cell: GridCell)
 
 func setup(
 		g: CombatGrid,
@@ -92,6 +93,7 @@ func _execute_enemies() -> void:
 		var target_cell := enemy_ai.calculate_move(enemy, grid)
 		if target_cell != enemy.grid_cell:
 			grid.move_entity(enemy, target_cell)
+			enemy_moved.emit(enemy, target_cell)
 		enemy_ai.execute_attack(enemy, player)
 
 func _on_resonance(group: Array[EmotionObject]) -> void:
