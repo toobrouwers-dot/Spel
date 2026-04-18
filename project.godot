@@ -39,6 +39,7 @@ swipe_right={"deadzone": 0.5, "events": []}
 
 renderer/rendering_method="mobile"
 renderer/rendering_method.mobile="mobile"
+renderer/rendering_method.web="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true
 environment/defaults/default_clear_color=Color(0.05, 0.05, 0.1, 1)
 
