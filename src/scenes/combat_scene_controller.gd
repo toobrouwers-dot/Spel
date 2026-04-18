@@ -64,21 +64,27 @@ func _connect_signals() -> void:
 	p.moved.connect(func(_from, to): player_visual.move_to_cell(to))
 
 func _start_fight() -> void:
+	var run: RunProgressionSystem = get_node("/root/RunProgression")
 	_place_player_on_grid()
 	var starter_deck := _build_starter_deck()
 	hand_manager.setup(starter_deck)
-	var spawned_enemies := enemy_spawner.spawn_wave(combat_grid, 3)
+	var spawned_enemies := enemy_spawner.spawn_wave(
+		combat_grid,
+		run.get_enemy_count(),
+		run.get_enemy_hp(),
+		run.get_enemy_damage()
+	)
 	turn_system.setup(combat_grid, _get_player(), hand_manager, deck_mutation)
 	turn_system.enemies = spawned_enemies
 	hud.update_hp(_get_player().current_hp, _get_player().max_hp)
+	hud.update_fight_number(run.fight_number)
 	for i in 4:
 		hand_manager.draw_card()
 
 func _build_game_over_screen() -> void:
 	game_over_screen = GameOverScreen.new()
-	game_over_screen.restart_requested.connect(
-		func() -> void: get_tree().reload_current_scene()
-	)
+	game_over_screen.next_fight_requested.connect(_on_next_fight)
+	game_over_screen.restart_run_requested.connect(_on_restart_run)
 	add_child(game_over_screen)
 
 func _place_player_on_grid() -> void:
@@ -187,11 +193,22 @@ func _on_enemy_died(enemy: EnemyEntity) -> void:
 	turn_system.enemies.erase(enemy)
 
 func _on_fight_ended(player_won: bool) -> void:
+	var run: RunProgressionSystem = get_node("/root/RunProgression")
 	if player_won:
-		deck_mutation.on_fight_ended(hand_manager.draw_pile + hand_manager.hand + hand_manager.discard_pile)
-		game_over_screen.show_win()
+		var full_deck := hand_manager.draw_pile + hand_manager.hand + hand_manager.discard_pile
+		deck_mutation.on_fight_ended(full_deck)
+		run.advance_fight(turn_system.enemies.size())
+		game_over_screen.show_win(run.fight_number - 1, run.enemies_defeated)
 	else:
-		game_over_screen.show_lose()
+		game_over_screen.show_lose(run.fight_number, run.enemies_defeated)
+
+func _on_next_fight() -> void:
+	get_tree().reload_current_scene()
+
+func _on_restart_run() -> void:
+	var run: RunProgressionSystem = get_node("/root/RunProgression")
+	run.reset()
+	get_tree().reload_current_scene()
 
 func _get_player() -> PlayerEntity:
 	return entity_layer.get_node("PlayerEntity") as PlayerEntity

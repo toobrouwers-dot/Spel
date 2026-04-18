@@ -45,6 +45,14 @@ offset_right = 1040.0
 offset_bottom = 56.0
 text = "Beurt 1"
 
+[node name="FightLabel" type="Label" parent="HUD"]
+anchors_preset = 0
+offset_left = 40.0
+offset_top = 60.0
+offset_right = 400.0
+offset_bottom = 96.0
+text = "Gevecht 1"
+
 [node name="HandUI" type="CanvasLayer" parent="."]
 layer = 10
 script = ExtResource("6_handui")
