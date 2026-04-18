@@ -19,6 +19,7 @@ const GRID_OFFSET := Vector2(
 
 const PLAYER_START_COL := 2
 const PLAYER_START_ROW := 0
+const SWIPE_THRESHOLD := 40.0
 
 var combat_grid: CombatGrid
 var cell_visuals: Dictionary = {}        # GridCell -> GridCellVisual
@@ -26,6 +27,8 @@ var emotion_visuals: Dictionary = {}     # EmotionObject -> EmotionObjectVisual
 var enemy_visuals: Dictionary = {}       # EnemyEntity -> EnemyVisual
 var player_visual: PlayerVisual
 var _selected_card: EmotionCard = null
+var _queued_move_cell: GridCell = null
+var _touch_start: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	combat_grid = CombatGrid.new()
@@ -77,18 +80,53 @@ func _place_player_on_grid() -> void:
 	player_visual.setup(p)
 	entity_layer.add_child(player_visual)
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			_touch_start = event.position
+		else:
+			_handle_swipe(event.position - _touch_start)
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			_touch_start = event.position
+		else:
+			_handle_swipe(event.position - _touch_start)
+
+func _handle_swipe(delta: Vector2) -> void:
+	if delta.length() < SWIPE_THRESHOLD:
+		return
+	var dir := Vector2.ZERO
+	if abs(delta.x) > abs(delta.y):
+		dir = Vector2.RIGHT if delta.x > 0 else Vector2.LEFT
+	else:
+		dir = Vector2.DOWN if delta.y > 0 else Vector2.UP
+	var player := _get_player()
+	var target_col := player.grid_cell.col + int(dir.x)
+	var target_row := player.grid_cell.row + int(dir.y)
+	var target := combat_grid.get_cell(target_col, target_row)
+	if target and target.entity == null:
+		_set_queued_move(target)
+
+func _set_queued_move(cell: GridCell) -> void:
+	if _queued_move_cell and cell_visuals.has(_queued_move_cell):
+		cell_visuals[_queued_move_cell].set_queued_move(false)
+	_queued_move_cell = cell
+	if cell and cell_visuals.has(cell):
+		cell_visuals[cell].set_queued_move(true)
+
 ## Kaart geselecteerd vanuit HandUI
 func on_card_selected(card: EmotionCard) -> void:
 	_selected_card = card
 	_highlight_valid_cells(card)
 
-## Cel getapt — plaatst geselecteerde kaart
+## Cel getapt — plaatst geselecteerde kaart en voert gequeued beweging uit
 func on_cell_tapped(cell: GridCell) -> void:
 	if not _selected_card or not cell.is_empty_of_emotion():
 		return
-	var move_target := _get_player().grid_cell
+	var move_target := _queued_move_cell if _queued_move_cell else _get_player().grid_cell
 	turn_system.execute_player_action(_selected_card, cell, move_target)
 	_selected_card = null
+	_set_queued_move(null)
 	_clear_highlights()
 
 func _highlight_valid_cells(card: EmotionCard) -> void:

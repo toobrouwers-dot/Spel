@@ -5,10 +5,12 @@ const CELL_SIZE := 180.0
 const BORDER_COLOR := Color(0.3, 0.3, 0.4, 0.6)
 const HIGHLIGHT_COLOR := Color(0.8, 0.8, 1.0, 0.3)
 const VALID_DROP_COLOR := Color(0.2, 1.0, 0.4, 0.4)
+const QUEUED_MOVE_COLOR := Color(0.3, 0.8, 1.0, 0.35)
 
 var cell: GridCell
 var _highlighted := false
 var _valid_drop := false
+var _queued_move := false
 
 signal tapped(cell: GridCell)
 
@@ -28,6 +30,10 @@ func set_valid_drop(on: bool) -> void:
 	_valid_drop = on
 	queue_redraw()
 
+func set_queued_move(on: bool) -> void:
+	_queued_move = on
+	queue_redraw()
+
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventScreenTouch and event.pressed:
 		tapped.emit(cell)
@@ -40,6 +46,8 @@ func _draw() -> void:
 
 	if _valid_drop:
 		draw_rect(rect, VALID_DROP_COLOR)
+	elif _queued_move:
+		draw_rect(rect, QUEUED_MOVE_COLOR)
 	elif _highlighted:
 		draw_rect(rect, HIGHLIGHT_COLOR)
 
