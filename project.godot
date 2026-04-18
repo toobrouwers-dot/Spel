@@ -12,6 +12,7 @@ config/description="Emotionele grid-deckbuilder roguelite — mobile-first portr
 config/version="0.1.0"
 config/tags=PackedStringArray("mobile", "roguelite", "deckbuilder")
 config/features=PackedStringArray("4.6", "Mobile")
+run/main_scene="res://src/scenes/CombatScene.tscn"
 boot_splash/bg_color=Color(0.05, 0.05, 0.1, 1)
 boot_splash/show_image=false
 
