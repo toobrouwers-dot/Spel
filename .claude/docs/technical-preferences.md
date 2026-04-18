@@ -5,44 +5,44 @@
 
 ## Engine & Language
 
-- **Engine**: [TO BE CONFIGURED — run /setup-engine]
-- **Language**: [TO BE CONFIGURED]
-- **Rendering**: [TO BE CONFIGURED]
-- **Physics**: [TO BE CONFIGURED]
+- **Engine**: Godot 4.6
+- **Language**: GDScript (statisch getypeerd — altijd type-annotaties gebruiken)
+- **Rendering**: Mobile renderer (Forward+) — geoptimaliseerd voor portrait
+- **Physics**: Jolt (Godot 4.6 standaard) — minimaal gebruikt, grid is logisch niet fysiek
 
 ## Input & Platform
 
 <!-- Written by /setup-engine. Read by /ux-design, /ux-review, /test-setup, /team-ui, and /dev-story -->
 <!-- to scope interaction specs, test helpers, and implementation to the correct input methods. -->
 
-- **Target Platforms**: [TO BE CONFIGURED — e.g., PC, Console, Mobile, Web]
-- **Input Methods**: [TO BE CONFIGURED — e.g., Keyboard/Mouse, Gamepad, Touch, Mixed]
-- **Primary Input**: [TO BE CONFIGURED — the dominant input for this game]
-- **Gamepad Support**: [TO BE CONFIGURED — Full / Partial / None]
-- **Touch Support**: [TO BE CONFIGURED — Full / Partial / None]
-- **Platform Notes**: [TO BE CONFIGURED — any platform-specific UX constraints]
+- **Target Platforms**: Mobile (iOS + Android), Desktop (PC/Mac secundair)
+- **Input Methods**: Touch (primair), Keyboard/Mouse (secundair voor desktop)
+- **Primary Input**: Touch — tap-selecteer + tap-plaatsen, swipe voor beweging
+- **Gamepad Support**: None
+- **Touch Support**: Full — éénhandige bediening in portrait verplicht
+- **Platform Notes**: Geen horizontale scroll tijdens gevecht. Alle UI zichtbaar in één scherm (portrait 9:19.5). Minimale tap-targets 44×44dp.
 
 ## Naming Conventions
 
-- **Classes**: [TO BE CONFIGURED]
-- **Variables**: [TO BE CONFIGURED]
-- **Signals/Events**: [TO BE CONFIGURED]
-- **Files**: [TO BE CONFIGURED]
-- **Scenes/Prefabs**: [TO BE CONFIGURED]
-- **Constants**: [TO BE CONFIGURED]
+- **Classes**: PascalCase (`CombatGrid`, `EmotionObject`, `TurnSystem`)
+- **Variables**: snake_case (`aura_radius`, `emotion_type`, `echo_tokens`)
+- **Signals**: snake_case werkwoord-voltooid (`emotion_placed`, `resonance_triggered`, `turn_ended`)
+- **Files**: snake_case (`combat_grid.gd`, `emotion_object.gd`)
+- **Scenes**: PascalCase (`CombatScene.tscn`, `EmotionCard.tscn`)
+- **Constants**: SCREAMING_SNAKE_CASE (`GRID_WIDTH`, `COLLAPSE_THRESHOLD`)
 
 ## Performance Budgets
 
-- **Target Framerate**: [TO BE CONFIGURED]
-- **Frame Budget**: [TO BE CONFIGURED]
-- **Draw Calls**: [TO BE CONFIGURED]
-- **Memory Ceiling**: [TO BE CONFIGURED]
+- **Target Framerate**: 60 FPS (mobile), 120 FPS (desktop)
+- **Frame Budget**: 16.6ms (mobile 60fps)
+- **Draw Calls**: <100 per frame (grid + emotie-objecten + UI)
+- **Memory Ceiling**: 512 MB (mid-range Android target)
 
 ## Testing
 
-- **Framework**: [TO BE CONFIGURED]
-- **Minimum Coverage**: [TO BE CONFIGURED]
-- **Required Tests**: Balance formulas, gameplay systems, networking (if applicable)
+- **Framework**: GdUnit4
+- **Minimum Coverage**: 80% voor core systemen (CombatGrid, EmotionObject, TurnSystem, ResonanceSystem)
+- **Required Tests**: Aura-berekeningen, Resonantie-detectie, deck-mutatieformules, vijand-attractie-scores
 
 ## Forbidden Patterns
 
@@ -65,12 +65,12 @@
 <!-- Read by /code-review, /architecture-decision, /architecture-review, and team skills -->
 <!-- to know which specialist to spawn for engine-specific validation. -->
 
-- **Primary**: [TO BE CONFIGURED — run /setup-engine]
-- **Language/Code Specialist**: [TO BE CONFIGURED]
-- **Shader Specialist**: [TO BE CONFIGURED]
-- **UI Specialist**: [TO BE CONFIGURED]
-- **Additional Specialists**: [TO BE CONFIGURED]
-- **Routing Notes**: [TO BE CONFIGURED]
+- **Primary**: `godot-specialist`
+- **Language/Code Specialist**: `godot-gdscript-specialist`
+- **Shader Specialist**: `godot-shader-specialist`
+- **UI Specialist**: `godot-gdscript-specialist` (Control nodes / CanvasLayer)
+- **Additional Specialists**: geen — GDExtension niet nodig voor dit project
+- **Routing Notes**: Grid-logica en emotie-systemen altijd via `godot-gdscript-specialist`. Visuele aura-effecten via `godot-shader-specialist`.
 
 ### File Extension Routing
 
@@ -79,9 +79,9 @@
 
 | File Extension / Type | Specialist to Spawn |
 |-----------------------|---------------------|
-| Game code (primary language) | [TO BE CONFIGURED] |
-| Shader / material files | [TO BE CONFIGURED] |
-| UI / screen files | [TO BE CONFIGURED] |
-| Scene / prefab / level files | [TO BE CONFIGURED] |
-| Native extension / plugin files | [TO BE CONFIGURED] |
-| General architecture review | Primary |
+| Game code (primary language) | `godot-gdscript-specialist` |
+| Shader / material files | `godot-shader-specialist` |
+| UI / screen files | `godot-gdscript-specialist` |
+| Scene / prefab / level files | `godot-specialist` |
+| Native extension / plugin files | N/A — niet gebruikt |
+| General architecture review | `godot-specialist` |
