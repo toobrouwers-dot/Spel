@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://src/scenes/combat_scene_controller.gd" id="1_controller"]
 [ext_resource type="Script" path="res://src/core/turn/turn_system.gd" id="2_turn"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://src/core/entities/player_entity.gd" id="5_player"]
 [ext_resource type="Script" path="res://src/ui/hand_ui.gd" id="6_handui"]
 [ext_resource type="Script" path="res://src/core/entities/enemy_spawner.gd" id="8_spawner"]
+[ext_resource type="Script" path="res://src/scenes/player_visual.gd" id="9_playervis"]
 [ext_resource type="Script" path="res://src/ui/hud.gd" id="7_hud"]
 
 [node name="CombatScene" type="Node2D"]

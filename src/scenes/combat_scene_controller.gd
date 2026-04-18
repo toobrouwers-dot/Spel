@@ -17,10 +17,14 @@ const GRID_OFFSET := Vector2(
 @onready var deck_mutation: DeckMutationSystem = $Systems/DeckMutationSystem
 @onready var enemy_spawner: EnemySpawner = $Systems/EnemySpawner
 
+const PLAYER_START_COL := 2
+const PLAYER_START_ROW := 0
+
 var combat_grid: CombatGrid
 var cell_visuals: Dictionary = {}        # GridCell -> GridCellVisual
 var emotion_visuals: Dictionary = {}     # EmotionObject -> EmotionObjectVisual
 var enemy_visuals: Dictionary = {}       # EnemyEntity -> EnemyVisual
+var player_visual: PlayerVisual
 var _selected_card: EmotionCard = null
 
 func _ready() -> void:
@@ -49,16 +53,29 @@ func _connect_signals() -> void:
 	enemy_spawner.enemy_spawned.connect(_on_enemy_spawned)
 	turn_system.enemy_moved.connect(_on_enemy_moved)
 	turn_system.turn_ended.connect(func(t): hud.update_turn(t))
-	_get_player().hp_changed.connect(func(_o, c): hud.update_hp(c, _get_player().max_hp))
+	turn_system.panic_changed.connect(func(active): player_visual.show_panic(active))
+	var p := _get_player()
+	p.hp_changed.connect(func(_o, c): hud.update_hp(c, p.max_hp))
+	p.moved.connect(func(_from, to): player_visual.move_to_cell(to))
 
 func _start_fight() -> void:
+	_place_player_on_grid()
 	var starter_deck := _build_starter_deck()
 	hand_manager.setup(starter_deck)
 	var spawned_enemies := enemy_spawner.spawn_wave(combat_grid, 3)
 	turn_system.setup(combat_grid, _get_player(), hand_manager, deck_mutation)
 	turn_system.enemies = spawned_enemies
+	hud.update_hp(_get_player().current_hp, _get_player().max_hp)
 	for i in 4:
 		hand_manager.draw_card()
+
+func _place_player_on_grid() -> void:
+	var p := _get_player()
+	var start_cell := combat_grid.get_cell(PLAYER_START_COL, PLAYER_START_ROW)
+	combat_grid.move_entity(p, start_cell)
+	player_visual = PlayerVisual.new()
+	player_visual.setup(p)
+	entity_layer.add_child(player_visual)
 
 ## Kaart geselecteerd vanuit HandUI
 func on_card_selected(card: EmotionCard) -> void:

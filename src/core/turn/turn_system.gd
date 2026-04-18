@@ -14,6 +14,7 @@ signal turn_started(turn: int)
 signal turn_ended(turn: int)
 signal fight_ended(player_won: bool)
 signal enemy_moved(enemy: EnemyEntity, new_cell: GridCell)
+signal panic_changed(active: bool)
 
 func setup(
 		g: CombatGrid,
@@ -33,6 +34,7 @@ func execute_player_action(card: EmotionCard, target_cell: GridCell, move_to: Gr
 
 	if card.emotion_type == EmotionObject.Type.PANIC:
 		panic_active = true
+		panic_changed.emit(true)
 		_place_panic()
 	else:
 		grid.place_emotion(card.emotion_type, target_cell, card.mutation_level)
