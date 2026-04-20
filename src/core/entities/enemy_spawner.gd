@@ -15,14 +15,14 @@ const DEFAULT_RESPONSES := {
 
 signal enemy_spawned(enemy: EnemyEntity)
 
-func spawn_wave(grid: CombatGrid, count: int) -> Array[EnemyEntity]:
+func spawn_wave(grid: CombatGrid, count: int, hp: int = 12, damage: int = 4) -> Array[EnemyEntity]:
 	var spawned: Array[EnemyEntity] = []
 	var available := _get_available_spawn_cells(grid)
 	available.shuffle()
 
 	for i in min(count, available.size()):
 		var cell := available[i]
-		var enemy := _create_enemy(cell)
+		var enemy := _create_enemy(cell, hp, damage)
 		grid.move_entity(enemy, cell)
 		spawned.append(enemy)
 		enemy_spawned.emit(enemy)
@@ -36,10 +36,10 @@ func _get_available_spawn_cells(grid: CombatGrid) -> Array[GridCell]:
 			cells.append(cell)
 	return cells
 
-func _create_enemy(cell: GridCell) -> EnemyEntity:
+func _create_enemy(cell: GridCell, hp: int, damage: int) -> EnemyEntity:
 	var enemy := EnemyEntity.new()
-	enemy.max_hp = 12
-	enemy.attack_damage = 4
+	enemy.max_hp = hp
+	enemy.attack_damage = damage
 	enemy.move_speed = 1
 	enemy.emotion_responses = DEFAULT_RESPONSES.duplicate()
 	enemy.grid_cell = cell

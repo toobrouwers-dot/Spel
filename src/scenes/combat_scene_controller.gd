@@ -58,27 +58,41 @@ func _connect_signals() -> void:
 	enemy_spawner.enemy_spawned.connect(_on_enemy_spawned)
 	turn_system.enemy_moved.connect(_on_enemy_moved)
 	turn_system.turn_ended.connect(func(t): hud.update_turn(t))
+	turn_system.turn_ended.connect(func(_t): AudioManager.play_turn_tick())
 	turn_system.panic_changed.connect(func(active): player_visual.show_panic(active))
+	turn_system.panic_changed.connect(func(active): if active: AudioManager.play_panic_on())
+	turn_system.fight_ended.connect(_on_fight_ended_audio)
+	combat_grid.emotion_placed.connect(func(_o, _c): AudioManager.play_card_played())
+	combat_grid.emotion_collapsed.connect(func(_o, _p): AudioManager.play_emotion_collapse())
+	combat_grid.resonance_triggered.connect(func(_g): AudioManager.play_resonance())
+	hand_manager.card_drawn.connect(func(_c): AudioManager.play_card_drawn())
 	var p := _get_player()
 	p.hp_changed.connect(func(_o, c): hud.update_hp(c, p.max_hp))
+	p.hp_changed.connect(func(old, new_hp): if new_hp < old: AudioManager.play_player_hit())
 	p.moved.connect(func(_from, to): player_visual.move_to_cell(to))
 
 func _start_fight() -> void:
+	var run: RunProgressionSystem = get_node("/root/RunProgression")
 	_place_player_on_grid()
 	var starter_deck := _build_starter_deck()
 	hand_manager.setup(starter_deck)
-	var spawned_enemies := enemy_spawner.spawn_wave(combat_grid, 3)
+	var spawned_enemies := enemy_spawner.spawn_wave(
+		combat_grid,
+		run.get_enemy_count(),
+		run.get_enemy_hp(),
+		run.get_enemy_damage()
+	)
 	turn_system.setup(combat_grid, _get_player(), hand_manager, deck_mutation)
 	turn_system.enemies = spawned_enemies
 	hud.update_hp(_get_player().current_hp, _get_player().max_hp)
+	hud.update_fight_number(run.fight_number)
 	for i in 4:
 		hand_manager.draw_card()
 
 func _build_game_over_screen() -> void:
 	game_over_screen = GameOverScreen.new()
-	game_over_screen.restart_requested.connect(
-		func() -> void: get_tree().reload_current_scene()
-	)
+	game_over_screen.next_fight_requested.connect(_on_next_fight)
+	game_over_screen.restart_run_requested.connect(_on_restart_run)
 	add_child(game_over_screen)
 
 func _place_player_on_grid() -> void:
@@ -181,17 +195,35 @@ func _on_enemy_spawned(enemy: EnemyEntity) -> void:
 	entity_layer.add_child(vis)
 	enemy_visuals[enemy] = vis
 	enemy.died.connect(func() -> void: _on_enemy_died(enemy))
+	enemy.hp_changed.connect(func(old, new_hp): if new_hp < old: AudioManager.play_enemy_hit())
 
 func _on_enemy_died(enemy: EnemyEntity) -> void:
 	enemy_visuals.erase(enemy)
 	turn_system.enemies.erase(enemy)
 
-func _on_fight_ended(player_won: bool) -> void:
+func _on_fight_ended_audio(player_won: bool) -> void:
 	if player_won:
-		deck_mutation.on_fight_ended(hand_manager.draw_pile + hand_manager.hand + hand_manager.discard_pile)
-		game_over_screen.show_win()
+		AudioManager.play_fight_won()
 	else:
-		game_over_screen.show_lose()
+		AudioManager.play_fight_lost()
+
+func _on_fight_ended(player_won: bool) -> void:
+	var run: RunProgressionSystem = get_node("/root/RunProgression")
+	if player_won:
+		var full_deck := hand_manager.draw_pile + hand_manager.hand + hand_manager.discard_pile
+		deck_mutation.on_fight_ended(full_deck)
+		run.advance_fight(turn_system.enemies.size())
+		game_over_screen.show_win(run.fight_number - 1, run.enemies_defeated)
+	else:
+		game_over_screen.show_lose(run.fight_number, run.enemies_defeated)
+
+func _on_next_fight() -> void:
+	get_tree().reload_current_scene()
+
+func _on_restart_run() -> void:
+	var run: RunProgressionSystem = get_node("/root/RunProgression")
+	run.reset()
+	get_tree().reload_current_scene()
 
 func _get_player() -> PlayerEntity:
 	return entity_layer.get_node("PlayerEntity") as PlayerEntity
